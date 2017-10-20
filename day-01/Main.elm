@@ -22,10 +22,10 @@ isPalindrome input =
                 (\currentChar -> List.member currentChar aToZ)
                 characters
 
-        check =
-            Debug.log "the letters" justLetters
+        lettersInReverse =
+            List.reverse justLetters
     in
-    True
+    justLetters == lettersInReverse
 
 
 asciiCodeLowercaseA =

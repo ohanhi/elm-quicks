@@ -18,23 +18,9 @@ isPalindrome input =
             String.toList (String.toLower input)
 
         justLetters =
-            List.filter
-                (\currentChar -> List.member currentChar aToZ)
-                characters
+            List.filter Char.isLower characters
 
         lettersInReverse =
             List.reverse justLetters
     in
     justLetters == lettersInReverse
-
-
-asciiCodeLowercaseA =
-    97
-
-
-asciiCodeLowercaseZ =
-    122
-
-
-aToZ =
-    List.map Char.fromCode (List.range asciiCodeLowercaseA asciiCodeLowercaseZ)

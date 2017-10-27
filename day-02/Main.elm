@@ -1,15 +1,27 @@
 module Main exposing (..)
 
 import Char
-import Html
+import Html exposing (..)
 
 
 main =
-    Html.text (toString (isPalindrome palindrome))
+    Html.beginnerProgram
+        { model = model
+        , view = view
+        , update = update
+        }
 
 
-palindrome =
-    "Are we not drawn onward, we few, drawn onward to new era?"
+update msg model =
+    model
+
+
+view model =
+    Html.text (toString (isPalindrome model))
+
+
+model =
+    "Are?"
 
 
 isPalindrome input =

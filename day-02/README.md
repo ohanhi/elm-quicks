@@ -74,6 +74,4 @@ The user can now type in their own potential palindromes and our program tells t
 
 ---
 
-You can try out the application and play with the code on Ellie:
-
-<iframe src="https://ellie-app.com/embed/LGftKnn9a1/0" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+You can try out the application and play with the code on Ellie: [https://ellie-app.com/LGftKnn9a1/0](https://ellie-app.com/LGftKnn9a1/0)

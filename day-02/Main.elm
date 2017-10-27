@@ -2,6 +2,8 @@ module Main exposing (..)
 
 import Char
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 
 main =
@@ -12,12 +14,16 @@ main =
         }
 
 
-update msg model =
-    model
+update textThatTheUserHasWritten model =
+    textThatTheUserHasWritten
 
 
 view model =
-    Html.text (toString (isPalindrome model))
+    div []
+        [ input [ value model, onInput (\text -> text) ] []
+        , br [] []
+        , Html.text (toString (isPalindrome model))
+        ]
 
 
 model =

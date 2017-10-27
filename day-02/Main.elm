@@ -27,7 +27,7 @@ view model =
 
 
 model =
-    "Are?"
+    "Are we not drawn onward, we few, drawn onward to new era?"
 
 
 isPalindrome input =

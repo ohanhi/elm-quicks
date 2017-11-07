@@ -59,12 +59,12 @@ update msg model =
                 ! []
 
         GotError err ->
-            { model | errorMaybe = Just err } ! []
+            { model | error = toString err } ! []
 
         SaveOk palindromes ->
             { model
                 | savedPalindromes = palindromes
-                , errorMaybe = Nothing
+                , error = ""
             }
                 ! []
 
@@ -90,9 +90,7 @@ view model =
             [ text "Save the palindrome" ]
         , savedPalindromesView model.savedPalindromes
         , br [] []
-        , model.errorMaybe
-            |> Maybe.map (\error -> Html.text (toString error))
-            |> Maybe.withDefault (Html.div [] [])
+        , Html.text model.error
         ]
 
 
@@ -108,7 +106,7 @@ palindromeView palindrome =
 init =
     { currentPalindome = "Are we not drawn onward, we few, drawn onward to new era?"
     , savedPalindromes = []
-    , errorMaybe = Nothing
+    , error = ""
     }
         ! [ Http.get "http://localhost:3000/" (Json.list Json.string)
                 |> Http.send

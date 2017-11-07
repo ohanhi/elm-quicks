@@ -9,7 +9,7 @@ let db = []
 
 app.get('/', (req, res) => res.json(db))
 // app.get('/', (req, res) => res.sendStatus(500))
-app.put('/', bodyParser.json(), (req, res) => {
+app.post('/', bodyParser.json(), (req, res) => {
   db = req.body
   res.json(db)
 })

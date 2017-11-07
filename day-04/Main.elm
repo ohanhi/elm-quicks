@@ -40,11 +40,11 @@ update msg model =
                     | currentPalindome = ""
                     , savedPalindromes = newPalindromes
                 }
-                    ! [ put "http://localhost:3000/" (encode newPalindromes)
+                    ! [ Http.post "http://localhost:3000/" (Http.jsonBody <| encode newPalindromes) (Json.list Json.string)
                             |> Http.send
                                 (\response ->
                                     case response of
-                                        Ok () ->
+                                        Ok _ ->
                                             SaveOk
 
                                         Err error ->
@@ -69,19 +69,6 @@ encode list =
     list
         |> List.map JS.string
         |> JS.list
-
-
-put : String -> JS.Value -> Http.Request ()
-put url body =
-    Http.request
-        { method = "PUT"
-        , headers = []
-        , url = url
-        , body = Http.jsonBody body
-        , expect = Http.expectStringResponse (\_ -> Ok ())
-        , timeout = Nothing
-        , withCredentials = False
-        }
 
 
 view model =

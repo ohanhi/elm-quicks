@@ -36,21 +36,21 @@ update msg model =
                 newPalindromes =
                     model.currentPalindome :: model.savedPalindromes
             in
-                { model
-                    | currentPalindome = ""
-                    , savedPalindromes = newPalindromes
-                }
-                    ! [ Http.post "http://localhost:3000/" (Http.jsonBody <| encode newPalindromes) (Json.list Json.string)
-                            |> Http.send
-                                (\response ->
-                                    case response of
-                                        Ok palindromes ->
-                                            SaveOk palindromes
+            { model
+                | currentPalindome = ""
+                , savedPalindromes = newPalindromes
+            }
+                ! [ Http.post "http://localhost:3000/" (Http.jsonBody <| encode newPalindromes) (Json.list Json.string)
+                        |> Http.send
+                            (\response ->
+                                case response of
+                                    Ok palindromes ->
+                                        SaveOk palindromes
 
-                                        Err error ->
-                                            GotError error
-                                )
-                      ]
+                                    Err error ->
+                                        GotError error
+                            )
+                  ]
 
         GotPalindromes palindromes ->
             { model
@@ -132,4 +132,4 @@ isPalindrome input =
         lettersInReverse =
             List.reverse justLetters
     in
-        justLetters == lettersInReverse
+    justLetters == lettersInReverse

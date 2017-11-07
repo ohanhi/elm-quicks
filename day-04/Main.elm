@@ -23,7 +23,7 @@ type Msg
     | SavePalindrome
     | GotPalindromes (List String)
     | GotError Http.Error
-    | SaveOk
+    | SaveOk (List String)
 
 
 update msg model =
@@ -44,8 +44,8 @@ update msg model =
                             |> Http.send
                                 (\response ->
                                     case response of
-                                        Ok _ ->
-                                            SaveOk
+                                        Ok palindromes ->
+                                            SaveOk palindromes
 
                                         Err error ->
                                             GotError error
@@ -61,8 +61,12 @@ update msg model =
         GotError err ->
             { model | errorMaybe = Just err } ! []
 
-        SaveOk ->
-            { model | errorMaybe = Nothing } ! []
+        SaveOk palindromes ->
+            { model
+                | savedPalindromes = palindromes
+                , errorMaybe = Nothing
+            }
+                ! []
 
 
 encode list =

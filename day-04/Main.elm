@@ -40,19 +40,7 @@ update msg model =
                 | currentPalindome = ""
                 , savedPalindromes = newPalindromes
             }
-                ! [ Http.post
-                        "http://localhost:3000/"
-                        (encode newPalindromes)
-                        (Json.list Json.string)
-                        |> Http.send
-                            (\response ->
-                                case response of
-                                    Ok palindromes ->
-                                        SaveOk palindromes
-
-                                    Err error ->
-                                        GotError error
-                            )
+                ! [ save newPalindromes
                   ]
 
         GotPalindromes palindromes ->
@@ -70,6 +58,35 @@ update msg model =
                 , error = ""
             }
                 ! []
+
+
+save newPalindromes =
+    Http.post
+        "http://localhost:3000/"
+        (encode newPalindromes)
+        (Json.list Json.string)
+        |> Http.send
+            (\response ->
+                case response of
+                    Ok palindromes ->
+                        SaveOk palindromes
+
+                    Err error ->
+                        GotError error
+            )
+
+
+getPalindromes =
+    Http.get "http://localhost:3000/" (Json.list Json.string)
+        |> Http.send
+            (\response ->
+                case response of
+                    Ok savedPalindromes ->
+                        GotPalindromes savedPalindromes
+
+                    Err error ->
+                        GotError error
+            )
 
 
 encode list =
@@ -112,17 +129,7 @@ init =
     , savedPalindromes = []
     , error = ""
     }
-        ! [ Http.get "http://localhost:3000/" (Json.list Json.string)
-                |> Http.send
-                    (\response ->
-                        case response of
-                            Ok savedPalindromes ->
-                                GotPalindromes savedPalindromes
-
-                            Err error ->
-                                GotError error
-                    )
-          ]
+        ! [ getPalindromes ]
 
 
 isPalindrome input =

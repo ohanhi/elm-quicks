@@ -40,7 +40,10 @@ update msg model =
                 | currentPalindome = ""
                 , savedPalindromes = newPalindromes
             }
-                ! [ Http.post "http://localhost:3000/" (Http.jsonBody <| encode newPalindromes) (Json.list Json.string)
+                ! [ Http.post
+                        "http://localhost:3000/"
+                        (encode newPalindromes)
+                        (Json.list Json.string)
                         |> Http.send
                             (\response ->
                                 case response of
@@ -73,6 +76,7 @@ encode list =
     list
         |> List.map JS.string
         |> JS.list
+        |> Http.jsonBody
 
 
 view model =

@@ -5,8 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Json.Decode as Json
-import Json.Encode as JS
+import Json.Decode exposing (list, string)
+import Json.Encode
 
 
 main =
@@ -43,23 +43,18 @@ update msg model =
                 | currentPalindome = ""
                 , savedPalindromes = newPalindromes
               }
-            , Http.send getPalindromesHandler (Http.post "http://localhost:3000/" (encode newPalindromes) decoder)
+            , Http.send handler (Http.post "http://localhost:3000/" (encode newPalindromes) decoder)
             )
 
         GotPalindromes palindromes ->
-            ( { model
-                | savedPalindromes = palindromes
-                , error = ""
-              }
-            , Cmd.none
-            )
+            ( { model | savedPalindromes = palindromes }, Cmd.none )
 
         GotError error ->
             ( { model | error = toString error }, Cmd.none )
 
 
 encode palindromes =
-    Http.jsonBody (JS.list (List.map JS.string palindromes))
+    Http.jsonBody (Json.Encode.list (List.map Json.Encode.string palindromes))
 
 
 view model =
@@ -70,7 +65,7 @@ view model =
             ]
             []
         , br [] []
-        , Html.text (toString (isPalindrome model.currentPalindome))
+        , text (toString (isPalindrome model.currentPalindome))
         , br [] []
         , button
             [ onClick SavePalindrome ]
@@ -95,16 +90,16 @@ init =
       , savedPalindromes = []
       , error = ""
       }
-    , Http.send getPalindromesHandler (Http.get "http://localhost:3000/" decoder)
+    , Http.send handler (Http.get "http://localhost:3000/" decoder)
     )
 
 
 decoder =
-    Json.list Json.string
+    Json.Decode.list string
 
 
-getPalindromesHandler response =
-    case response of
+handler result =
+    case result of
         Ok palindromes ->
             GotPalindromes palindromes
 

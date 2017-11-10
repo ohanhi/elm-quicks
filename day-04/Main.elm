@@ -11,11 +11,15 @@ import Json.Encode as JS
 
 main =
     Html.program
-        { view = view
+        { init = init
+        , view = view
         , update = update
-        , init = init
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
+
+
+subscriptions model =
+    Sub.none
 
 
 type Msg
@@ -23,77 +27,39 @@ type Msg
     | SavePalindrome
     | GotPalindromes (List String)
     | GotError Http.Error
-    | SaveOk (List String)
 
 
 update msg model =
     case msg of
         UpdateCurrentPalindrome text ->
-            { model | currentPalindome = text } ! []
+            ( { model | currentPalindome = text }, Cmd.none )
 
         SavePalindrome ->
             let
                 newPalindromes =
                     model.currentPalindome :: model.savedPalindromes
             in
-            { model
+            ( { model
                 | currentPalindome = ""
                 , savedPalindromes = newPalindromes
-            }
-                ! [ save newPalindromes
-                  ]
+              }
+            , Http.send getPalindromesHandler (Http.post "http://localhost:3000/" (encode newPalindromes) decoder)
+            )
 
         GotPalindromes palindromes ->
-            { model
-                | savedPalindromes = palindromes
-            }
-                ! []
-
-        GotError err ->
-            { model | error = toString err } ! []
-
-        SaveOk palindromes ->
-            { model
+            ( { model
                 | savedPalindromes = palindromes
                 , error = ""
-            }
-                ! []
-
-
-save newPalindromes =
-    Http.post
-        "http://localhost:3000/"
-        (encode newPalindromes)
-        (Json.list Json.string)
-        |> Http.send
-            (\response ->
-                case response of
-                    Ok palindromes ->
-                        SaveOk palindromes
-
-                    Err error ->
-                        GotError error
+              }
+            , Cmd.none
             )
 
-
-getPalindromes =
-    Http.get "http://localhost:3000/" (Json.list Json.string)
-        |> Http.send
-            (\response ->
-                case response of
-                    Ok savedPalindromes ->
-                        GotPalindromes savedPalindromes
-
-                    Err error ->
-                        GotError error
-            )
+        GotError error ->
+            ( { model | error = toString error }, Cmd.none )
 
 
-encode list =
-    list
-        |> List.map JS.string
-        |> JS.list
-        |> Http.jsonBody
+encode palindromes =
+    Http.jsonBody (JS.list (List.map JS.string palindromes))
 
 
 view model =
@@ -111,7 +77,7 @@ view model =
             [ text "Save the palindrome" ]
         , savedPalindromesView model.savedPalindromes
         , br [] []
-        , Html.text model.error
+        , text model.error
         ]
 
 
@@ -125,11 +91,25 @@ palindromeView palindrome =
 
 
 init =
-    { currentPalindome = "Are we not drawn onward, we few, drawn onward to new era?"
-    , savedPalindromes = []
-    , error = ""
-    }
-        ! [ getPalindromes ]
+    ( { currentPalindome = "Are we not drawn onward, we few, drawn onward to new era?"
+      , savedPalindromes = []
+      , error = ""
+      }
+    , Http.send getPalindromesHandler (Http.get "http://localhost:3000/" decoder)
+    )
+
+
+decoder =
+    Json.list Json.string
+
+
+getPalindromesHandler response =
+    case response of
+        Ok palindromes ->
+            GotPalindromes palindromes
+
+        Err error ->
+            GotError error
 
 
 isPalindrome input =

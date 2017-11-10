@@ -1,3 +1,3 @@
-# Day 3: Save the palindromes!
+# Day 4: Save the palindromes!
 
-Using the [day-02](../day-02) as a base.
+Using the [day-03](../day-03) as a base.

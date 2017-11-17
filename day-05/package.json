@@ -1,0 +1,25 @@
+{
+  "name": "day-05",
+  "version": "1.0.0",
+  "description": "Using the [day-04](../day-04) as a base.",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ohanhi/elm-quicks.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ohanhi/elm-quicks/issues"
+  },
+  "homepage": "https://github.com/ohanhi/elm-quicks#readme"
+}

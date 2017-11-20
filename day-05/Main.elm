@@ -9,19 +9,6 @@ import Json.Decode exposing (list, string)
 import Json.Encode
 
 
-main =
-    Html.program
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        }
-
-
-subscriptions model =
-    Sub.none
-
-
 type Msg
     = UpdateCurrentPalindrome String
     | SavePalindrome
@@ -29,6 +16,22 @@ type Msg
     | GotError Http.Error
 
 
+type alias Model =
+    { currentPalindome : String
+    , savedPalindromes : List String
+    , error : String
+    }
+
+
+model : Model
+model =
+    { currentPalindome = ""
+    , savedPalindromes = []
+    , error = ""
+    }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdateCurrentPalindrome text ->
@@ -53,10 +56,15 @@ update msg model =
             ( { model | error = toString error }, Cmd.none )
 
 
+encode : List String -> Http.Body
 encode palindromes =
-    Http.jsonBody (Json.Encode.list (List.map Json.Encode.string palindromes))
+    palindromes
+        |> List.map Json.Encode.string
+        |> Json.Encode.list
+        |> Http.jsonBody
 
 
+view : Model -> Html Msg
 view model =
     div []
         [ input
@@ -76,28 +84,31 @@ view model =
         ]
 
 
+savedPalindromesView : List String -> Html msg
 savedPalindromesView palindromes =
-    ul []
-        (List.map palindromeView palindromes)
+    palindromes
+        |> List.map palindromeView
+        |> ul []
 
 
+palindromeView : String -> Html msg
 palindromeView palindrome =
     li [] [ text palindrome ]
 
 
+init : ( Model, Cmd Msg )
 init =
-    ( { currentPalindome = "Are we not drawn onward, we few, drawn onward to new era?"
-      , savedPalindromes = []
-      , error = ""
-      }
+    ( model
     , Http.send handler (Http.get "http://localhost:3000/" decoder)
     )
 
 
+decoder : Json.Decode.Decoder (List String)
 decoder =
     Json.Decode.list string
 
 
+handler : Result Http.Error (List String) -> Msg
 handler result =
     case result of
         Ok palindromes ->
@@ -107,6 +118,7 @@ handler result =
             GotError error
 
 
+isPalindrome : String -> Bool
 isPalindrome input =
     let
         characters =
@@ -119,3 +131,18 @@ isPalindrome input =
             List.reverse justLetters
     in
     justLetters == lettersInReverse
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+main : Program Never Model Msg
+main =
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
